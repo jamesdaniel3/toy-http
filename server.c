@@ -15,8 +15,8 @@ int main() {
     char buffer[BUFFER_SIZE] = {0};
 
     // Create a socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) { 
-        // The socket method creates a new socket with TYPE, DOMAIN, and PROTOCOL given
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_fd < 0) { 
         perror("Socket failed, exiting");
         exit(EXIT_FAILURE);
     }
@@ -34,10 +34,10 @@ int main() {
     }
     #endif
 
-    // Setup the server address, setting address family to AF_INET (IPv4)
+    // Setup the server
     address.sin_family = AF_INET;
 
-    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_addr.s_addr = INADDR_ANY; // tells the server to accept connections on any of the server's available IP addresses
 
     address.sin_port = htons(PORT);
 
@@ -62,7 +62,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    printf("Connection accepted");
+    printf("Connection accepted\n");
 
     // Read data from the client and print it 
     ssize_t valread;
