@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
+#include "http_parser.c"
+
 #define PORT 8080
 #define BUFFER_SIZE 1024
 
@@ -68,7 +70,13 @@ int main() {
     ssize_t valread;
 
     while((valread = read(new_socket, buffer, BUFFER_SIZE)) > 0){
-        printf("Client: %s", buffer);
+        parse_request(buffer);
+        // read the data 
+        // pass the request to the http parser
+        // handle the request
+        // generate the response
+        // send the response
+        // close the connection or keep it open 
         memset(buffer, 0, sizeof(buffer));
     }
 
