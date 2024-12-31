@@ -1,7 +1,6 @@
 #include "request_handler.h"
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 char *handle_get_request(HttpRequest request) {
     // Determine the size of the location buffer we need to allocate
