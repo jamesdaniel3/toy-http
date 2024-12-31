@@ -44,7 +44,6 @@ HttpRequest parse_request(const char *request) {
     int header_index = 0;
     line = strtok(buffer, "\r\n");  // Skip first line
     while ((line = strtok(NULL, "\r\n")) != NULL && header_index < 10) {
-        printf("Header line: '%s'\n", line);
         if (strlen(line) == 0) {
             continue;
         }

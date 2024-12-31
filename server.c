@@ -21,13 +21,7 @@ void print_http_request(const HttpRequest *request) {
     printf("Version: '%s'\n", request->version);
 
     // Print headers with more debug info
-    printf("\nHeaders Debug:\n");
     for (int i = 0; i < 10; i++) {
-        printf("Header[%d] - Key length: %zu, Value length: %zu\n", 
-               i, 
-               strlen(request->headers[i][0]), 
-               strlen(request->headers[i][1]));
-        
         if (strlen(request->headers[i][0]) > 0) {
             printf("  '%s': '%s'\n", 
                    request->headers[i][0], 
@@ -35,7 +29,6 @@ void print_http_request(const HttpRequest *request) {
         }
     }
     
-    printf("\n=== End of Request ===\n");
 }
 
 int main() {
@@ -99,12 +92,10 @@ int main() {
     ssize_t valread;
 
     while((valread = read(new_socket, buffer, BUFFER_SIZE)) > 0){
-        printf("'%s'", buffer);
         HttpRequest parsed_request = parse_request(buffer);
-        print_http_request(&parsed_request);
 
         if(strcmp(parsed_request.method, "GET") == 0){
-            handle_get_request(parsed_request);
+            char *file_location = handle_get_request(parsed_request);
         }
 
         memset(buffer, 0, sizeof(buffer));
