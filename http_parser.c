@@ -59,13 +59,11 @@ HttpRequest parse_request(const char *request) {
             while (*value == ' ') value++;
 
             // Copy key (everything before the colon)
-            strncpy(parsed_request.headers[header_index][0], line, 
-                    MIN(key_length, sizeof(parsed_request.headers[header_index][0]) - 1));
+            strncpy(parsed_request.headers[header_index][0], line, MIN(key_length, sizeof(parsed_request.headers[header_index][0]) - 1));
             parsed_request.headers[header_index][0][MIN(key_length, sizeof(parsed_request.headers[header_index][0]) - 1)] = '\0';
             
             // Copy value (everything after the colon and space)
-            strncpy(parsed_request.headers[header_index][1], value,
-                    sizeof(parsed_request.headers[header_index][1]) - 1);
+            strncpy(parsed_request.headers[header_index][1], value, sizeof(parsed_request.headers[header_index][1]) - 1);
             parsed_request.headers[header_index][1][sizeof(parsed_request.headers[header_index][1]) - 1] = '\0';
             
             header_index++;
