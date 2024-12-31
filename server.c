@@ -12,18 +12,29 @@
 
 // helper method to confirm that the HttpRequest is being created correctly
 void print_http_request(const HttpRequest *request) {
+    printf("\n=== HTTP Request Debug Output ===\n");
+    
     // Print method, path, and version
-    printf("Method: %s\n", request->method);
-    printf("Path: %s\n", request->path);
-    printf("Version: %s\n", request->version);
+    printf("Method: '%s'\n", request->method);
+    printf("Path: '%s'\n", request->path);
+    printf("Version: '%s'\n", request->version);
 
-    // Print headers
-    printf("Headers:\n");
+    // Print headers with more debug info
+    printf("\nHeaders Debug:\n");
     for (int i = 0; i < 10; i++) {
-        if (strlen(request->headers[i][0]) > 0) { // Check if the key is non-empty
-            printf("  %s: %s\n", request->headers[i][0], request->headers[i][1]);
+        printf("Header[%d] - Key length: %zu, Value length: %zu\n", 
+               i, 
+               strlen(request->headers[i][0]), 
+               strlen(request->headers[i][1]));
+        
+        if (strlen(request->headers[i][0]) > 0) {
+            printf("  '%s': '%s'\n", 
+                   request->headers[i][0], 
+                   request->headers[i][1]);
         }
     }
+    
+    printf("\n=== End of Request ===\n");
 }
 
 int main() {
@@ -87,6 +98,7 @@ int main() {
     ssize_t valread;
 
     while((valread = read(new_socket, buffer, BUFFER_SIZE)) > 0){
+        printf("'%s'", buffer);
         HttpRequest parsed_request = parse_request(buffer);
         print_http_request(&parsed_request);
         memset(buffer, 0, sizeof(buffer));

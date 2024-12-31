@@ -3,26 +3,30 @@
 
 #include "http_parser.h"
 
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+
 HttpRequest parse_request(const char *request) {
     HttpRequest parsed_request;
-    memset(&parsed_request, 0, sizeof(HttpRequest));  // Initialize all fields to zero
+    memset(&parsed_request, 0, sizeof(HttpRequest));
 
     char buffer[1024];
+    char first_line_buffer[1024];
     strncpy(buffer, request, sizeof(buffer) - 1);
     buffer[sizeof(buffer) - 1] = '\0';
+    
+    strncpy(first_line_buffer, buffer, sizeof(first_line_buffer) - 1);
+    first_line_buffer[sizeof(first_line_buffer) - 1] = '\0';
 
-    // Get the first line
-    char *line = strtok(buffer, "\r\n");
+    // Parse first line
+    char *line = strtok(first_line_buffer, "\r\n");
     if (line == NULL) {
         return parsed_request;
     }
 
-    // Parse first line (METHOD PATH VERSION)
     char *method = strtok(line, " ");
     char *path = strtok(NULL, " ");
     char *version = strtok(NULL, " \r\n");
 
-    // Safely copy if tokens exist
     if (method) {
         strncpy(parsed_request.method, method, sizeof(parsed_request.method) - 1);
         parsed_request.method[sizeof(parsed_request.method) - 1] = '\0';
@@ -38,23 +42,30 @@ HttpRequest parse_request(const char *request) {
 
     // Parse headers
     int header_index = 0;
+    line = strtok(buffer, "\r\n");  // Skip first line
     while ((line = strtok(NULL, "\r\n")) != NULL && header_index < 10) {
-        // Skip empty lines
+        printf("Header line: '%s'\n", line);
         if (strlen(line) == 0) {
             continue;
         }
 
-        char *key = strtok(line, ":");
-        char *value = strtok(NULL, "\r\n");
+        // Instead of using strtok, use strchr to find the colon
+        char *colon = strchr(line, ':');
+        if (colon != NULL) {
+            size_t key_length = colon - line;
+            char *value = colon + 1;
 
-        if (key && value) {
             // Skip leading whitespace in value
             while (*value == ' ') value++;
+
+            // Copy key (everything before the colon)
+            strncpy(parsed_request.headers[header_index][0], line, 
+                    MIN(key_length, sizeof(parsed_request.headers[header_index][0]) - 1));
+            parsed_request.headers[header_index][0][MIN(key_length, sizeof(parsed_request.headers[header_index][0]) - 1)] = '\0';
             
-            strncpy(parsed_request.headers[header_index][0], key, sizeof(parsed_request.headers[header_index][0]) - 1);
-            parsed_request.headers[header_index][0][sizeof(parsed_request.headers[header_index][0]) - 1] = '\0';
-            
-            strncpy(parsed_request.headers[header_index][1], value, sizeof(parsed_request.headers[header_index][1]) - 1);
+            // Copy value (everything after the colon and space)
+            strncpy(parsed_request.headers[header_index][1], value,
+                    sizeof(parsed_request.headers[header_index][1]) - 1);
             parsed_request.headers[header_index][1][sizeof(parsed_request.headers[header_index][1]) - 1] = '\0';
             
             header_index++;
