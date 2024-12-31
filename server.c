@@ -4,10 +4,27 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#include "http_parser.c"
+#include "http_parser.h"
 
 #define PORT 8080
 #define BUFFER_SIZE 1024
+
+
+// helper method to confirm that the HttpRequest is being created correctly
+void print_http_request(const HttpRequest *request) {
+    // Print method, path, and version
+    printf("Method: %s\n", request->method);
+    printf("Path: %s\n", request->path);
+    printf("Version: %s\n", request->version);
+
+    // Print headers
+    printf("Headers:\n");
+    for (int i = 0; i < 10; i++) {
+        if (strlen(request->headers[i][0]) > 0) { // Check if the key is non-empty
+            printf("  %s: %s\n", request->headers[i][0], request->headers[i][1]);
+        }
+    }
+}
 
 int main() {
     int server_fd, new_socket;
@@ -70,13 +87,8 @@ int main() {
     ssize_t valread;
 
     while((valread = read(new_socket, buffer, BUFFER_SIZE)) > 0){
-        parse_request(buffer);
-        // read the data 
-        // pass the request to the http parser
-        // handle the request
-        // generate the response
-        // send the response
-        // close the connection or keep it open 
+        HttpRequest parsed_request = parse_request(buffer);
+        print_http_request(&parsed_request);
         memset(buffer, 0, sizeof(buffer));
     }
 
