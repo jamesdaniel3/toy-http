@@ -6,10 +6,10 @@ CFLAGS = -Wall -Wextra -g
 TARGET = server
 
 # Source files
-SRCS = server.c http_parser.c
+SRCS = server.c http_parser.c request_handler.c
 
 # Header files
-HDRS = http_parser.h
+HDRS = http_parser.h request_handler.h
 
 # Object files (derived from source files)
 OBJS = $(SRCS:.c=.o)

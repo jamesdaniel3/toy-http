@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 
 #include "http_parser.h"
+#include "request_handler.h"
 
 #define PORT 8080
 #define BUFFER_SIZE 1024
@@ -101,6 +102,11 @@ int main() {
         printf("'%s'", buffer);
         HttpRequest parsed_request = parse_request(buffer);
         print_http_request(&parsed_request);
+
+        if(strcmp(parsed_request.method, "GET") == 0){
+            handle_get_request(parsed_request);
+        }
+
         memset(buffer, 0, sizeof(buffer));
     }
 
