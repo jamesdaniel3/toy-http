@@ -11,26 +11,6 @@
 #define BUFFER_SIZE 1024
 
 
-// helper method to confirm that the HttpRequest is being created correctly
-void print_http_request(const HttpRequest *request) {
-    printf("\n=== HTTP Request Debug Output ===\n");
-    
-    // Print method, path, and version
-    printf("Method: '%s'\n", request->method);
-    printf("Path: '%s'\n", request->path);
-    printf("Version: '%s'\n", request->version);
-
-    // Print headers with more debug info
-    for (int i = 0; i < 10; i++) {
-        if (strlen(request->headers[i][0]) > 0) {
-            printf("  '%s': '%s'\n", 
-                   request->headers[i][0], 
-                   request->headers[i][1]);
-        }
-    }
-    
-}
-
 int main() {
     int server_fd, new_socket;
     struct sockaddr_in address;
@@ -95,7 +75,7 @@ int main() {
         HttpRequest parsed_request = parse_request(buffer);
 
         if(strcmp(parsed_request.method, "GET") == 0){
-            char *file_location = handle_get_request(parsed_request);
+            handle_get_request(parsed_request, new_socket);
         }
 
         memset(buffer, 0, sizeof(buffer));
